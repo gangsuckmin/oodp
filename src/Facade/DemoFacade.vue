@@ -1,14 +1,14 @@
 <template>
-  <div>
-    <h2>Facade Demo</h2>
-    <form @submit.prevent="run">
+  <section>
+    <h3>Facade Demo</h3>
+    <div style="display:flex; gap:8px; margin-bottom:8px;">
       <input v-model="token" placeholder="token (VALID)" />
-      <input v-model.number="amount" type="number" placeholder="amount" />
       <input v-model="address" placeholder="address" />
-      <button>Checkout</button>
-    </form>
-    <pre v-if="result">{{ result }}</pre>
-  </div>
+      <input type="number" v-model.number="amount" placeholder="amount" />
+      <button @click="run">Checkout</button>
+    </div>
+    <pre v-if="out">{{ out }}</pre>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -16,14 +16,14 @@ import { ref } from "vue";
 import { OrderFacade } from "./Facade";
 
 const token = ref("VALID");
-const amount = ref(100);
 const address = ref("Seoul");
-const result = ref("");
+const amount = ref(300);
+const out = ref("");
 
 const facade = new OrderFacade();
 function run()
 {
-  result.value = JSON.stringify
+  out.value = JSON.stringify
   (
     facade.checkout({ token: token.value, amount: amount.value, address: address.value }),
     null, 2

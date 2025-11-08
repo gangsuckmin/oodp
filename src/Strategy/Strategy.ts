@@ -1,21 +1,31 @@
-export interface Compressor
+export interface PricingStrategy
 {
-  compress(data: Uint8Array): string;
+  calc(raw: number): number;
 }
 
-export class ZipCompressor implements Compressor
+export class NoDiscount implements PricingStrategy
 {
-  compress(data: Uint8Array) { return `ZIP(${data.length})`; }
+  calc(raw: number) { return raw; }
 }
 
-export class RarCompressor implements Compressor
+export class StudentDiscount implements PricingStrategy
 {
-  compress(data: Uint8Array) { return `RAR(${data.length})`; }
+  calc(raw: number) { return Math.round(raw * 0.85); }
 }
 
-export class CompressionContext
+export class BulkDiscount implements PricingStrategy
 {
-  constructor(private strategy: Compressor) {}
-  setStrategy(s: Compressor) { this.strategy = s; }
-  run(data: Uint8Array) { return this.strategy.compress(data); }
+  constructor(private threshold = 3, private rate = 0.8) {}
+
+  calc(raw: number)
+  {
+    return raw >= this.threshold * 100 ? Math.round(raw * this.rate) : raw;
+  }
+}
+
+export class PricingContext
+{
+  constructor(private strategy: PricingStrategy) {}
+  setStrategy(s: PricingStrategy) { this.strategy = s; }
+  run(raw: number) { return this.strategy.calc(raw); }
 }

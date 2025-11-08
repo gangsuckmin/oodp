@@ -1,29 +1,50 @@
 <template>
-  <div>
-    <h2>Strategy Demo</h2>
-    <select v-model="algo">
-      <option value="zip">ZIP</option>
-      <option value="rar">RAR</option>
-    </select>
-    <button @click="run">Compress</button>
-    <pre v-if="out">{{ out }}</pre>
-  </div>
+  <section>
+    <h3>Strategy Demo</h3>
+    <div style="display:flex; gap:8px; margin-bottom:8px;">
+      <label>
+        전략:
+        <select v-model="sel" @change="apply">
+          <option value="none">기본가</option>
+          <option value="student">학생할인(15%)</option>
+          <option value="bulk">대량(3개 이상 20%)</option>
+        </select>
+      </label>
+      <label>
+        수량:
+        <input type="number" v-model.number="qty" min="0" @input="recalc" />
+      </label>
+    </div>
+    <p>원가: {{ raw }}</p>
+    <p>적용 후 금액: <b>{{ total }}</b></p>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { CompressionContext, ZipCompressor, RarCompressor } from "./Strategy";
+import { ref, watch } from "vue";
+import { PricingContext, NoDiscount, StudentDiscount, BulkDiscount } from "./Strategy";
 
-const algo = ref<"zip" | "rar">("zip");
-const out = ref("");
+const pricePerItem = 100;
+const qty = ref(0);
+const raw = ref(0);
+const total = ref(0);
+const sel = ref<"none"|"student"|"bulk">("none");
 
-function run()
+const ctx = new PricingContext(new NoDiscount());
+
+function recalc()
 {
-  const ctx = new CompressionContext
-  (
-    algo.value === "zip" ? new ZipCompressor() : new RarCompressor()
-  );
-  const fake = new Uint8Array([1,2,3,4,5]); // 데모 데이터
-  out.value = ctx.run(fake);
+  raw.value = qty.value * pricePerItem;
+  total.value = ctx.run(raw.value);
 }
+
+function apply()
+{
+  if (sel.value === "student") ctx.setStrategy(new StudentDiscount());
+  else if (sel.value === "bulk") ctx.setStrategy(new BulkDiscount());
+  else ctx.setStrategy(new NoDiscount());
+  recalc();
+}
+
+watch(qty, recalc, { immediate: true });
 </script>
