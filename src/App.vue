@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import Builder from './Builder/DemoBuilder.vue'
+import Facade from './Facade/DemoFacade.vue'
+import Strategy from "./Strategy/DemoStrategy.vue";
 </script>
 
 <template>
@@ -13,32 +14,40 @@ import TheWelcome from './components/TheWelcome.vue'
   </header>
 
   <main>
-    <TheWelcome />
+    <Builder/>
+    <Facade/>
+    <Strategy/>
   </main>
 </template>
 
 <style scoped>
-header {
+header
+{
   line-height: 1.5;
 }
 
-.logo {
+.logo
+{
   display: block;
   margin: 0 auto 2rem;
 }
 
-@media (min-width: 1024px) {
-  header {
+@media (min-width: 1024px)
+{
+  header
+  {
     display: flex;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
   }
 
-  .logo {
+  .logo
+  {
     margin: 0 2rem 0 0;
   }
 
-  header .wrapper {
+  header .wrapper
+  {
     display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
